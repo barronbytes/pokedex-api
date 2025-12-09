@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
+    "target": "esnext", // Affects compiled JS (overall language features, e.g., async/await, classes)
+    "module": "esnext", // Affects compiled JS (import and export syntax)
+    "moduleResolution": "Node", // Affects imports (how TypeScript locates modules for all import ... from ... statements)
+    "esModuleInterop": true, // Affects default imports (allows default-style imports from CommonJS modules)
+    "skipLibCheck": true // Affects type checking (skips checking types in declaration files in node_modules)
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
