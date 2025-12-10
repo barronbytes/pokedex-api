@@ -1,7 +1,7 @@
 {
   "_comments": {
     "init": "Created with 'npm init -y' to generate default package.json",
-    "devDeps": "Dev dependencies installed with 'npm install -D typescript @types/node'"
+    "devDeps": "Dev dependencies installed with 'npm install -D typescript @types/node vitest'"
   },
   "name": "pokedex-api",
   "version": "1.0.0",
@@ -10,7 +10,8 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/main.js",
-    "dev": "npx tsc && node dist/main.js"
+    "dev": "npx tsc && node dist/main.js",
+    "test": "vitest --run"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^24.10.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   }
 }
