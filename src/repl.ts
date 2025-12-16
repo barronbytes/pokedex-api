@@ -4,6 +4,7 @@ interface Terminal {
     input: Readable,
     output: Writable,
     prompt: () => void;
+    on: (event: "line", callback: (userInput: string) => void) => void;
 }
 
 
@@ -11,7 +12,7 @@ const terminal: Terminal = {
     input: process.stdin,
     output: process.stdout,
     prompt: () => {
-        terminal.output.write("> ");
+        terminal.output.write("Pokedex > ");
     }
 }
 
