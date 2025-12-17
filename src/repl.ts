@@ -1,12 +1,4 @@
-import readline from "node:readline";
-import { CLICommand, getCommands, commandExit } from "./commands.js"
-
-
-const repl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  prompt: "Pokedex > "
-});
+import { State } from "./state.js";
 
 
 export function cleanInput(input: string): Array<string> {
@@ -15,10 +7,12 @@ export function cleanInput(input: string): Array<string> {
 }
 
 
-export function startREPL() {
-    const commands = getCommands();
-    repl.prompt();
-    repl.on("line", (line) => {
+export function startREPL(state: State) {
+    const { repl, commands } = state;
+
+    state.repl.prompt();
+    
+    state.repl.on("line", (line) => {
         const words = cleanInput(line);
         const firstWord = words[0]?.toLowerCase() ?? "";
         const command = commands[firstWord] ?? firstWord;
@@ -26,7 +20,7 @@ export function startREPL() {
         if(typeof command === "string") {
             console.log(`Unknown command: "${firstWord}". Type "help" for a list of commands.`);
         } else {
-            command.callback(commands);
+            command.callback(state);
         }
 
         repl.prompt();

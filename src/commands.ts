@@ -1,9 +1,4 @@
-export type CLICommand = {
-    name: string,
-    description: string,
-    // function callback(commands: Record<string, CLICommand>): void
-    callback: (commands: Record<string, CLICommand>) => void;
-}
+import { CLICommand, State } from "./state.js";
 
 
 export function getCommands(): Record<string, CLICommand> {
@@ -22,16 +17,17 @@ export function getCommands(): Record<string, CLICommand> {
 }
 
 
-export function commandExit(commands?: Record<string, CLICommand>) {
+export function commandExit(state: State): void {
     console.log("Closing the Pokedex... Goodbye!");
+    state.repl.close();
     process.exit();
 }
 
 
-export function commandHelp(commands: Record<string, CLICommand>) {
+export function commandHelp(state: State): void {
     console.log("Welcome to the Pokedex!");
     console.log("Usage: \n\n");
-    for (const command of Object.values(commands)) {
+    for (const command of Object.values(state.commands)) {
         console.log(`${command.name}: ${command.description}`);
     }
 }
