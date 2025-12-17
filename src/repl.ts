@@ -1,4 +1,5 @@
 import readline from "node:readline";
+import { CLICommand, getCommands, commandExit } from "./commands.js"
 
 
 const repl = readline.createInterface({
@@ -15,14 +16,19 @@ export function cleanInput(input: string): Array<string> {
 
 
 export function startREPL() {
+    const commands = getCommands();
     repl.prompt();
     repl.on("line", (line) => {
-        const inputs = cleanInput(line);
-        if(!inputs.length) {
-            repl.prompt();
-            return;
+        const words = cleanInput(line);
+        const firstWord = words[0]?.toLowerCase() ?? "";
+        const command = commands[firstWord] ?? firstWord;
+
+        if(typeof command === "string") {
+            console.log(`Unknown command: "${firstWord}". Type "help" for a list of commands.`);
+        } else {
+            command.callback(commands);
         }
-        console.log(`Your command was: ${inputs[0].toLowerCase()}`);
+
         repl.prompt();
     });
 }
