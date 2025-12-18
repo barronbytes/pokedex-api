@@ -1,23 +1,6 @@
 import { CLICommand, State } from "./state.js";
 
 
-// Registers and returns all available CLI commands
-export function getCommands(): Record<string, CLICommand> {
-    return {
-        exit: {
-            name: "exit",
-            description: "Exits the Pokedex",
-            callback: commandExit,
-        },
-        help: {
-            name: "help",
-            description: "Displays a help message",
-            callback: commandHelp,
-        },
-    };
-}
-
-
 // Close the readline interface to stop the REPL loop before exiting the application
 export function commandExit(state: State): void {
     console.log("Closing the Pokedex... Goodbye!");
@@ -33,4 +16,9 @@ export function commandHelp(state: State): void {
     for (const command of Object.values(state.commands)) {
         console.log(`${command.name}: ${command.description}`);
     }
+}
+
+
+export function commandMap(state: State): void {
+    console.log("TO DO.");
 }
