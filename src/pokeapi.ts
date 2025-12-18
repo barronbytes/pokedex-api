@@ -1,5 +1,5 @@
 import { z, ZodError } from "zod";
-import { LocationAreaSchema } from "./pokeapi.types";
+import { PaginationSchema } from "./pokeapi.types";
 
 
 const baseURL = "https://pokeapi.co/api/v2/location-area";
@@ -13,8 +13,8 @@ type ApiCallResult<T> =
 
 
 // GET call for PokeAPI location areas => GET https://pokeapi.co/api/v2/location-area/{id or name}/
-export async function getPokeAPI(idOrName: number | string): Promise<ApiCallResult<z.infer<typeof LocationAreaSchema>>> {    
-    const url = `${baseURL}/${idOrName}/`;
+export async function getPokeAPI(pageURL: string | null): Promise<ApiCallResult<z.infer<typeof PaginationSchema>>> {
+    const url = pageURL ?? `${baseURL}?limit=20`;
     const settings = {
         method: "GET",
         headers: headersGET
@@ -25,7 +25,7 @@ export async function getPokeAPI(idOrName: number | string): Promise<ApiCallResu
         // Handle failure of getting the response (network or HTTP error)
         if (!response.ok) {
             return {
-                success: false,
+                success: false, 
                 error: new Error(`HTTP error! Status: ${response.status}`)
             };
         }
@@ -35,7 +35,7 @@ export async function getPokeAPI(idOrName: number | string): Promise<ApiCallResu
         const pokemonRawData = await response.json();
 
         // Validate with Zod
-        const pokemonValidatedData = LocationAreaSchema.parse(pokemonRawData);
+        const pokemonValidatedData = PaginationSchema.parse(pokemonRawData);
 
         return {
             success: true,

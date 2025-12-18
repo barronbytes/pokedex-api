@@ -17,9 +17,13 @@ export function getCommands(): Record<string, CLICommand> {
         },
         map: {
             name: "map",
-            description: "Returns map data from PokeAPI.",
+            description: "Displays the next 20 location areas.",
             callback: Fnc.commandMap,
-        }
-
+        },
+        mapb: {
+            name: "mapb",
+            description: "Displays the previous 20 location areas.",
+            callback: Fnc.commandMapBack,
+        },
     };
 }
