@@ -19,6 +19,13 @@ export async function commandHelp(state: State): Promise<void> {
 }
 
 
-export function commandMap(state: State): void {
-    console.log("TO DO.");
+// Return next page of PokeAPI location area results
+export async function commandNextPage(state: State): Promise<void> {
+    console.log("map");
+}
+
+
+// Return previous page of PokeAPI location area results
+export async function commandPreviousPage(state: State): Promise<void> {
+    console.log("map");
 }
