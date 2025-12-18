@@ -7,12 +7,12 @@ export function cleanInput(input: string): Array<string> {
 }
 
 
-export function startREPL(state: State) {
+export function startREPL(state: State): void {
     const { repl, commands } = state;
 
-    state.repl.prompt();
+    repl.prompt();
     
-    state.repl.on("line", (line) => {
+    repl.on("line", (line) => {
         const words = cleanInput(line);
         const firstWord = words[0]?.toLowerCase() ?? "";
         const command = commands[firstWord] ?? firstWord;

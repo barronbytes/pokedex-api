@@ -15,7 +15,7 @@ export type State = {
 }
 
 
-export function initState() {
+export function initState(): State {
     const repl = createInterface({
         input: process.stdin,
         output: process.stdout,
