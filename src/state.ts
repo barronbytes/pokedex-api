@@ -15,6 +15,7 @@ export type State = {
 }
 
 
+// Initializes and returns the shared application state
 export function initState(): State {
     const repl = createInterface({
         input: process.stdin,

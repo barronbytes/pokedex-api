@@ -1,6 +1,7 @@
 import { CLICommand, State } from "./state.js";
 
 
+// Registers and returns all available CLI commands
 export function getCommands(): Record<string, CLICommand> {
     return {
         exit: {
@@ -17,6 +18,7 @@ export function getCommands(): Record<string, CLICommand> {
 }
 
 
+// Close the readline interface to stop the REPL loop before exiting the application
 export function commandExit(state: State): void {
     console.log("Closing the Pokedex... Goodbye!");
     state.repl.close();
@@ -24,6 +26,7 @@ export function commandExit(state: State): void {
 }
 
 
+// Display usage information for all CLI commands
 export function commandHelp(state: State): void {
     console.log("Welcome to the Pokedex!");
     console.log("Usage: \n\n");
