@@ -1,5 +1,5 @@
 import { z, ZodError } from "zod";
-import { PaginationSchema } from "./pokeapi.types";
+import { PaginationSchema } from "./pokeapi.types.js";
 
 
 const baseURL = "https://pokeapi.co/api/v2/location-area";

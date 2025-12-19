@@ -13,7 +13,7 @@ export type CLICommand = {
 export type State = {
     repl: Interface;
     commands: Record<string, CLICommand>;
-    pokeapi: typeof getPokeAPI;
+    fetchPokeAPI: typeof getPokeAPI;
     nextLocationsURL: string | null;
     prevLocationsURL: string | null;
 }
@@ -32,7 +32,7 @@ export function initState(): State {
     return { 
         repl, 
         commands,
-        pokeapi: getPokeAPI,
+        fetchPokeAPI: getPokeAPI,
         nextLocationsURL: null,
         prevLocationsURL: null
     };
