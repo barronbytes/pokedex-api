@@ -1,49 +1,53 @@
 export type CacheEntry<T> = {
-    createdAt: number; // save Date.now()
-    val: T;
+  cachedAt: number;  // timestamp when this API response was cached
+  response: T;       // the actual PokeAPI response
 };
 
-export class Cache {
-  #cache = new Map<string, CacheEntry<any>>();
-  #reapIntervalID: NodeJS.Timeout | undefined = undefined;
-  #interval: number;
+export class PokeApiCache {
+  #responsesByUrl = new Map<string, CacheEntry<any>>(); // keyed by PokeAPI URL
+  #reapTimerId: NodeJS.Timeout | undefined = undefined;
+  #reapDelayMs: number;  // delay between automatic cleanup runs in milliseconds
 
-  constructor(interval: number) {
-    this.#interval = interval;
+  constructor(reapDelayMs: number) {
+    this.#reapDelayMs = reapDelayMs;
     this.#startReapLoop();
   }
 
-  add<T>(key: string, val: T): void {
-    const item: CacheEntry<T> = {
-      createdAt: Date.now(),
-      val: val,
+  /** Add a PokeAPI response to the cache under the given URL */
+  addResponse<T>(url: string, apiResponse: T): void {
+    const cacheEntry: CacheEntry<T> = {
+      cachedAt: Date.now(),
+      response: apiResponse,
     };
-    this.#cache.set(key, item);
+    this.#responsesByUrl.set(url, cacheEntry);
   }
 
-  get<T>(key: string): CacheEntry<any> | undefined {
-    return this.#cache.get(key);
+  /** Retrieve a cached PokeAPI response by URL, or undefined if not cached */
+  getResponse<T>(url: string): CacheEntry<any> | undefined {
+    return this.#responsesByUrl.get(url);
   }
 
+  /** Remove any cached responses that are older than the delay */
   #reap(): void {
-    const reapTime = Date.now() - this.#interval;
+    const expirationTime = Date.now() - this.#reapDelayMs;
 
-    this.#cache.forEach((item, key) => {
-      if (item.createdAt < reapTime) {
-        this.#cache.delete(key);
+    this.#responsesByUrl.forEach((cacheEntry, url) => {
+      if (cacheEntry.cachedAt < expirationTime) {
+        this.#responsesByUrl.delete(url);
       }
     });
   }
 
+  /** Start the automatic reaping loop to clean old cache entries */
   #startReapLoop(): void {
-    this.#reapIntervalID = setInterval(() => this.#reap(), this.#interval);
+    this.#reapTimerId = setInterval(() => this.#reap(), this.#reapDelayMs);
   }
 
+  /** Stop the automatic reaping loop */
   stopReapLoop(): void {
-    if (this.#reapIntervalID) {
-      clearInterval(this.#reapIntervalID);
-      this.#reapIntervalID = undefined;
+    if (this.#reapTimerId) {
+      clearInterval(this.#reapTimerId);
+      this.#reapTimerId = undefined;
     }
   }
 }
-
