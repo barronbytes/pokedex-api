@@ -1,4 +1,6 @@
-import { CLICommand, State } from "./state.js";
+import { State } from "./state.js";
+import { PaginationSchema } from "./pokeapi.types.js";
+import { z } from "zod";
 
 
 // Close the readline interface to stop the REPL loop before exiting the application
@@ -19,8 +21,8 @@ export async function commandHelp(state: State): Promise<void> {
 }
 
 
-// Shared helper to fetch PokeAPI page and print results
-async function fetchAndDisplayLocations(state: State, url: string): Promise<void> {
+// Shared helper to fetch PokeAPI locations
+async function fetchLocationsAndUpdateCache(state: State, url: string): Promise<z.infer<typeof PaginationSchema> | void> {
     const result = await state.fetchPokeAPI(url);
 
     // Exit method if fetchPokeAPI fails
@@ -29,13 +31,22 @@ async function fetchAndDisplayLocations(state: State, url: string): Promise<void
         return;
     }
 
-    // Set and print locations
+    // Update cache with url and locations
     const locations = result.data;
-    for (const loc of locations.results) {
-        console.log(loc.name);
-    }
+    state.pokeApiCache.addResponse(url, locations);
 
-    // Update pagination URLs
+    // Return locations
+    return locations
+}
+
+
+// Shared helper to print PokeAPI locations
+function displayLocations(state: State, locations: z.infer<typeof PaginationSchema>): void {
+    for (const loc of locations.results) { 
+        console.log(loc.name); 
+    } 
+    
+    // Update pagination URLs 
     state.nextLocationsURL = locations.next;
     state.prevLocationsURL = locations.previous;
 }
@@ -43,9 +54,14 @@ async function fetchAndDisplayLocations(state: State, url: string): Promise<void
 
 // Return next page of PokeAPI location area results
 export async function commandNextPage(state: State): Promise<void> {
-    // Set url and fetch PokeAPI data to display
+    // Set url and locations with cache check
     const url = state.nextLocationsURL ?? "https://pokeapi.co/api/v2/location-area?limit=20";
-    await fetchAndDisplayLocations(state, url);
+    const cacheEntry = state.pokeApiCache.getResponse(url);
+    const locations = cacheEntry ? cacheEntry.response : await fetchLocationsAndUpdateCache(state, url);
+
+    if (locations) {
+        displayLocations(state, locations);
+    }
 }
 
 
@@ -57,7 +73,12 @@ export async function commandPreviousPage(state: State): Promise<void> {
         return;
     }
 
-    // Set url and fetch PokeAPI data to display
-    const url = state.prevLocationsURL;
-    await fetchAndDisplayLocations(state, url);
+    // Set url and locations with cache check
+    const url = state.prevLocationsURL ?? "https://pokeapi.co/api/v2/location-area?limit=20";
+    const cacheEntry = state.pokeApiCache.getResponse(url);
+    const locations = cacheEntry ? cacheEntry.response : await fetchLocationsAndUpdateCache(state, url);
+
+    if (locations) {
+        displayLocations(state, locations);
+    }
 }
