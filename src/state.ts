@@ -1,6 +1,7 @@
 import { createInterface, type Interface } from "node:readline";
 import { getCommands } from "./command-records.js";
 import { getPokeAPI } from "./pokeapi.js";
+import { PokeApiCache } from "./pokecache.js";
 
 
 export type CLICommand = {
@@ -16,6 +17,7 @@ export type State = {
     fetchPokeAPI: typeof getPokeAPI;
     nextLocationsURL: string | null;
     prevLocationsURL: string | null;
+    pokeApiCache: PokeApiCache;
 }
 
 
@@ -34,6 +36,7 @@ export function initState(): State {
         commands,
         fetchPokeAPI: getPokeAPI,
         nextLocationsURL: null,
-        prevLocationsURL: null
+        prevLocationsURL: null,
+        pokeApiCache: new PokeApiCache(60000), // Reap every 60s
     };
 }

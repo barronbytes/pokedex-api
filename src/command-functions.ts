@@ -19,10 +19,8 @@ export async function commandHelp(state: State): Promise<void> {
 }
 
 
-// Return next page of PokeAPI location area results
-export async function commandNextPage(state: State): Promise<void> {
-    // Set url and fetch PokeAPI data
-    const url = state.nextLocationsURL ?? "https://pokeapi.co/api/v2/location-area?limit=20";
+// Shared helper to fetch PokeAPI page and print results
+async function fetchAndDisplayLocations(state: State, url: string): Promise<void> {
     const result = await state.fetchPokeAPI(url);
 
     // Exit method if fetchPokeAPI fails
@@ -43,6 +41,14 @@ export async function commandNextPage(state: State): Promise<void> {
 }
 
 
+// Return next page of PokeAPI location area results
+export async function commandNextPage(state: State): Promise<void> {
+    // Set url and fetch PokeAPI data to display
+    const url = state.nextLocationsURL ?? "https://pokeapi.co/api/v2/location-area?limit=20";
+    await fetchAndDisplayLocations(state, url);
+}
+
+
 // Return previous page of PokeAPI location area results
 export async function commandPreviousPage(state: State): Promise<void> {
     // Exit early if there is no previous page
@@ -51,23 +57,7 @@ export async function commandPreviousPage(state: State): Promise<void> {
         return;
     }
 
-    // Set url and fetch PokeAPI data
+    // Set url and fetch PokeAPI data to display
     const url = state.prevLocationsURL;
-    const result = await state.fetchPokeAPI(url);
-
-    // Exit method if pokeapi fails
-    if (!result.success) {
-        console.error(result.error.message);
-        return;
-    }
-
-    // Set and print locations
-    const locations = result.data;
-    for (const loc of locations.results) {
-        console.log(loc.name);
-    }
-
-    // Update pagination URLs
-    state.nextLocationsURL = locations.next;
-    state.prevLocationsURL = locations.previous;
+    await fetchAndDisplayLocations(state, url);
 }
