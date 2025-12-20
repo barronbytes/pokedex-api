@@ -5,8 +5,13 @@ export type CacheEntry<T> = {
 
 export class Cache {
   #cache = new Map<string, CacheEntry<any>>();
-  #reapIntervalId: NodeJS.Timeout | undefined = undefined;
-  #interval: number = 0;
+  #reapIntervalID: NodeJS.Timeout | undefined = undefined;
+  #interval: number;
+
+  constructor(interval: number) {
+    this.#interval = interval;
+    this.#startReapLoop();
+  }
 
   add<T>(key: string, val: T): void {
     const item: CacheEntry<T> = {
@@ -28,6 +33,17 @@ export class Cache {
         this.#cache.delete(key);
       }
     });
+  }
+
+  #startReapLoop(): void {
+    this.#reapIntervalID = setInterval(() => this.#reap(), this.#interval);
+  }
+
+  stopReapLoop(): void {
+    if (this.#reapIntervalID) {
+      clearInterval(this.#reapIntervalID);
+      this.#reapIntervalID = undefined;
+    }
   }
 }
 
