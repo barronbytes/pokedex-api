@@ -22,7 +22,7 @@ export async function commandHelp(state: State): Promise<void> {
 
 // Shared helper to fetch PokeAPI locations
 async function fetchLocationsAndUpdateCache(state: State, url: string): Promise<Locations | void> {
-    const result = await state.fetchPokeAPI(url);
+    const result = await state.apiLocations(url);
 
     // Exit method if fetchPokeAPI fails
     if (!result.success) {

@@ -1,4 +1,4 @@
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 import { LocationsSchema, Locations } from "./pokeapi.types.js";
 
 
@@ -12,9 +12,11 @@ type ApiCallResult<T> =
   | { success: false; error: Error };
 
 
-// GET call for PokeAPI location areas => GET https://pokeapi.co/api/v2/location-area/{id or name}/
-export async function getPokeAPI(pageURL: string | null): Promise<ApiCallResult<Locations>> {
-    const url = pageURL ?? `${baseURL}?limit=20`;
+// Helper function for GET requests to API
+async function fetchApi<T>(
+  url: string,
+  schema: z.ZodSchema<T>
+): Promise<ApiCallResult<T>> {
     const settings = {
         method: "GET",
         headers: headersGET
@@ -35,7 +37,7 @@ export async function getPokeAPI(pageURL: string | null): Promise<ApiCallResult<
         const pokemonRawData = await response.json();
 
         // Validate with Zod
-        const pokemonValidatedData = LocationsSchema.parse(pokemonRawData);
+        const pokemonValidatedData = schema.parse(pokemonRawData);
 
         return {
             success: true,
@@ -59,4 +61,13 @@ export async function getPokeAPI(pageURL: string | null): Promise<ApiCallResult<
             error: new Error(`Unexpected failure: ${error}`)
         };
     }
+}
+
+
+// GET call to location areas endpoint => https://pokeapi.co/api/v2/location-area/{id or name}/
+export async function fetchLocations(
+    pageURL: string | null
+): Promise<ApiCallResult<Locations>> {
+    const url = pageURL ?? `${baseURL}?limit=20`;
+    return fetchApi(url, LocationsSchema);
 }
