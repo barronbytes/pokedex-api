@@ -23,6 +23,7 @@
     "vitest": "^4.0.15"
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "zod": "^4.2.1"
   }
 }

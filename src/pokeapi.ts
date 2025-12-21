@@ -2,14 +2,24 @@ import { z, ZodError } from "zod";
 import { LocationsSchema, Locations, LocationAreaSchema, LocationArea } from "./pokeapi.types.js";
 
 
-const baseURL = "https://pokeapi.co/api/v2/location-area";
-const headersGET = {
-    Accept: "application/json"
-}
 // "Result type pattern" => returns data (for success) or error (for failure)
 type ApiCallResult<T> =
   | { success: true; data: T }
   | { success: false; error: Error };
+
+
+// Returns base url for endpoints
+export function getBaseURL(): string {
+    return process.env.BASE_URL || "https://pokeapi.co/api/v2/location-area";
+}
+
+
+// Returns headers for GET request
+export function getHeadersGET(): Record<string, string> {
+    return {
+        Accept: "application/json"
+    };
+}
 
 
 // Helper function for GET requests to API
@@ -19,7 +29,7 @@ async function fetchApi<T>(
 ): Promise<ApiCallResult<T>> {
     const settings = {
         method: "GET",
-        headers: headersGET
+        headers: getHeadersGET()
     }
 
     try {
@@ -68,7 +78,7 @@ async function fetchApi<T>(
 export async function fetchLocations(
     pageURL: string | null
 ): Promise<ApiCallResult<Locations>> {
-    const url = pageURL ?? `${baseURL}?limit=20`;
+    const url = pageURL ?? `${getBaseURL()}?limit=20`;
     return fetchApi(url, LocationsSchema);
 }
 
@@ -77,6 +87,6 @@ export async function fetchLocations(
 export async function fetchLocationArea(
     location: string | number
 ): Promise<ApiCallResult<LocationArea>> {
-    const url = `${baseURL}/${location}`;
+    const url = `${getBaseURL()}/${location}`;
     return fetchApi(url, LocationAreaSchema);
 }

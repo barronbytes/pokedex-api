@@ -1,4 +1,5 @@
 import { State } from "./state.js";
+import { getBaseURL } from "./pokeapi.js";
 import { Locations } from "./pokeapi.types.js";
 
 
@@ -54,7 +55,7 @@ function displayLocations(state: State, locations: Locations): void {
 // Return next page of PokeAPI location area results
 export async function commandNextPage(state: State): Promise<void> {
     // Set url and locations with cache check
-    const url = state.nextLocationsURL ?? "https://pokeapi.co/api/v2/location-area?limit=20";
+    const url = state.nextLocationsURL ?? `${getBaseURL()}?limit=20`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
     const locations = cacheEntry ? cacheEntry.response : await fetchLocationsAndUpdateCache(state, url);
 
@@ -73,7 +74,7 @@ export async function commandPreviousPage(state: State): Promise<void> {
     }
 
     // Set url and locations with cache check
-    const url = state.prevLocationsURL ?? "https://pokeapi.co/api/v2/location-area?limit=20";
+    const url = state.prevLocationsURL ?? `${getBaseURL()}?limit=20`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
     const locations = cacheEntry ? cacheEntry.response : await fetchLocationsAndUpdateCache(state, url);
 

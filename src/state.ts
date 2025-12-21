@@ -27,7 +27,7 @@ export function initState(): State {
     const repl = createInterface({
         input: process.stdin,
         output: process.stdout,
-        prompt: "Pokedex > "
+        prompt: process.env.APP_PROMPT || "Pokedex > "
     });
 
     const commands = getCommands();
@@ -39,6 +39,6 @@ export function initState(): State {
         apiLocationArea: fetchLocationArea,
         nextLocationsURL: null,
         prevLocationsURL: null,
-        pokeApiCache: new PokeApiCache(60000), // Reap every 60s
+        pokeApiCache: new PokeApiCache(parseInt(process.env.CACHE_INTERVAL_MS || "60000"))
     };
 }
