@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import { PaginationSchema, Pagination } from "./pokeapi.types.js";
+import { LocationsSchema, Locations } from "./pokeapi.types.js";
 
 
 const baseURL = "https://pokeapi.co/api/v2/location-area";
@@ -13,7 +13,7 @@ type ApiCallResult<T> =
 
 
 // GET call for PokeAPI location areas => GET https://pokeapi.co/api/v2/location-area/{id or name}/
-export async function getPokeAPI(pageURL: string | null): Promise<ApiCallResult<Pagination>> {
+export async function getPokeAPI(pageURL: string | null): Promise<ApiCallResult<Locations>> {
     const url = pageURL ?? `${baseURL}?limit=20`;
     const settings = {
         method: "GET",
@@ -35,7 +35,7 @@ export async function getPokeAPI(pageURL: string | null): Promise<ApiCallResult<
         const pokemonRawData = await response.json();
 
         // Validate with Zod
-        const pokemonValidatedData = PaginationSchema.parse(pokemonRawData);
+        const pokemonValidatedData = LocationsSchema.parse(pokemonRawData);
 
         return {
             success: true,
