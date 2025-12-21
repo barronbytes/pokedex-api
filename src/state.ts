@@ -1,6 +1,7 @@
 import { createInterface, type Interface } from "node:readline";
 import { getCommands } from "./command-records.js";
-import { fetchLocations, fetchLocationArea } from "./pokeapi.js";
+import { fetchLocations, fetchLocationArea, fetchPokemon } from "./pokeapi.js";
+import { Pokemon } from "./pokeapi.types.js"
 import { PokeApiCache } from "./pokecache.js";
 
 
@@ -14,10 +15,12 @@ export type CLICommand = {
 export type State = {
     repl: Interface;
     commands: Record<string, CLICommand>;
-    apiLocations: typeof fetchLocations;
-    apiLocationArea: typeof fetchLocationArea;
     nextLocationsURL: string | null;
     prevLocationsURL: string | null;
+    apiLocations: typeof fetchLocations;
+    apiLocationArea: typeof fetchLocationArea;
+    apiPokemon: typeof fetchPokemon;
+    pokedex: Record<string, Pokemon>;
     pokeApiCache: PokeApiCache;
 }
 
@@ -35,10 +38,12 @@ export function initState(): State {
     return { 
         repl, 
         commands,
-        apiLocations: fetchLocations,
-        apiLocationArea: fetchLocationArea,
         nextLocationsURL: null,
         prevLocationsURL: null,
+        apiLocations: fetchLocations,
+        apiLocationArea: fetchLocationArea,
+        apiPokemon: fetchPokemon,
+        pokedex: {},
         pokeApiCache: new PokeApiCache(parseInt(process.env.CACHE_INTERVAL_MS || "60000"))
     };
 }

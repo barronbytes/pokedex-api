@@ -30,5 +30,10 @@ export function getCommands(): Record<string, CLICommand> {
             description: "List Pokémon found within a location area.",
             callback: Fnc.commandExplore,
         },
+        catch: {
+            name: "catch",
+            description: "Attempt to catch a Pokémon and add it to your Pokédex.",
+            callback: Fnc.commandCatch,
+        },
     };
 }

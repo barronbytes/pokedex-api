@@ -1,6 +1,6 @@
 import { State } from "./state.js";
-import { getBaseURL, ApiCallResult } from "./pokeapi.js";
-import { Locations } from "./pokeapi.types.js";
+import { getLocationURL, getPokemonURL, ApiCallResult } from "./pokeapi.js";
+import { Locations, Pokemon } from "./pokeapi.types.js";
 
 
 // Close the readline interface to stop the REPL loop before exiting the application
@@ -59,7 +59,7 @@ function displayLocations(state: State, locations: Locations): void {
 // Return next page of PokeAPI location area results
 export async function commandNextPage(state: State): Promise<void> {
     // Set url and response data with cache check
-    const url = state.nextLocationsURL ?? `${getBaseURL()}?limit=20`;
+    const url = state.nextLocationsURL ?? `${getLocationURL()}?limit=20`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
     const locations = cacheEntry 
         ? cacheEntry.response 
@@ -79,8 +79,8 @@ export async function commandPreviousPage(state: State): Promise<void> {
         return;
     }
 
-    // Set url and response data with cache check
-    const url = state.prevLocationsURL ?? `${getBaseURL()}?limit=20`;
+    // Fetch location area information + cache check/update
+    const url = state.prevLocationsURL ?? `${getLocationURL()}?limit=20`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
     const locations = cacheEntry 
         ? cacheEntry.response 
@@ -103,8 +103,8 @@ export async function commandExplore(
         return;
     }
 
-    // Set url and response data with cache check
-    const url = `${getBaseURL()}/${location}`;
+    // Fetch INDIVIDUAL location area information + cache check/update
+    const url = `${getLocationURL()}/${location}`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
     const locationArea = cacheEntry 
         ? cacheEntry.response 
@@ -120,5 +120,39 @@ export async function commandExplore(
     console.log("Found Pokemon:");
     for (const encounter of locationArea.pokemon_encounters) {
         console.log(` - ${encounter.pokemon.name}`);
+    }
+}
+
+export async function commandCatch(
+    state: State, 
+    ...args: string[]
+): Promise<void> {
+    if (!args.length) {
+        console.log("Please provide the name of a Pokémon to catch.");
+        return;
+    }
+
+    // Fetch Pokémon information
+    const pokemonName = args[0].toLowerCase();
+    const url = `${getPokemonURL()}/${pokemonName}`;
+    const result = await state.apiPokemon(url);
+
+    if (!result.success) {
+        console.log(`Error: Failed to find Pokémon '${pokemonName}': ${result.error.message}`);
+        return;
+    }
+
+    const pokemon: Pokemon = result.data;
+    console.log(`Throwing a Pokeball at ${pokemonName}...`);
+
+    const catchChance = Math.max(0.1, 1 - pokemon.base_experience / 300);
+
+    const roll = Math.random();
+    if (roll <= catchChance) {
+        // Caught
+        state.pokedex[pokemon.name] = pokemon;
+        console.log(`${pokemon.name} was caught!`);
+    } else {
+        console.log(`${pokemon.name} escaped!`);
     }
 }

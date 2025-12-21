@@ -1,5 +1,5 @@
 import { z, ZodError } from "zod";
-import { LocationsSchema, Locations, LocationAreaSchema, LocationArea } from "./pokeapi.types.js";
+import * as PokeTypes from "./pokeapi.types.js";
 
 
 // "Result type pattern" => returns data (for success) or error (for failure)
@@ -8,9 +8,15 @@ export type ApiCallResult<T> =
   | { success: false; error: Error };
 
 
-// Returns base url for endpoints
-export function getBaseURL(): string {
-    return process.env.BASE_URL || "https://pokeapi.co/api/v2/location-area";
+// Returns base location url for endpoints
+export function getLocationURL(): string {
+    return process.env.BASE_LOCATION_URL || "https://pokeapi.co/api/v2/location-area";
+}
+
+
+// Returns base location url for endpoints
+export function getPokemonURL(): string {
+    return process.env.BASE_POKEMON_URL || "https://pokeapi.co/api/v2/pokemon";
 }
 
 
@@ -77,16 +83,16 @@ async function fetchApi<T>(
 // GET call to location areas endpoint
 export async function fetchLocations(
     pageURL: string | null
-): Promise<ApiCallResult<Locations>> {
-    const url = pageURL ?? `${getBaseURL()}?limit=20`;
-    return fetchApi(url, LocationsSchema);
+): Promise<ApiCallResult<PokeTypes.Locations>> {
+    const url = pageURL ?? `${getLocationURL()}?limit=20`;
+    return fetchApi(url, PokeTypes.LocationsSchema);
 }
 
 
 // GET call to INDIVIDUAL location area endpoint
 export async function fetchLocationArea(
     pageURL: string | null
-): Promise<ApiCallResult<LocationArea>> {
+): Promise<ApiCallResult<PokeTypes.LocationArea>> {
     if (!pageURL) {
         return {
             success: false,
@@ -94,5 +100,20 @@ export async function fetchLocationArea(
         };
     }
 
-    return fetchApi(pageURL, LocationAreaSchema);
+    return fetchApi(pageURL, PokeTypes.LocationAreaSchema);
+}
+
+// GET call to INDIVIDUAL pokemon endpoint
+// GET call to INDIVIDUAL pokemon endpoint
+export async function fetchPokemon(
+    pageURL: string | null
+): Promise<ApiCallResult<PokeTypes.Pokemon>> {
+    if (!pageURL) {
+        return {
+            success: false,
+            error: new Error("Pokemon URL is required")
+        };
+    }
+
+    return fetchApi(pageURL, PokeTypes.PokemonSchema);
 }

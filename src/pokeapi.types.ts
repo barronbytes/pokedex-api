@@ -88,3 +88,14 @@ export const LocationAreaSchema = z.object({
 });
 
 export type LocationArea = z.infer<typeof LocationAreaSchema>;
+
+
+// Schema for individual pokemon endpoint (minimal)
+export const PokemonSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  base_experience: z.number(),
+});
+
+export type Pokemon = z.infer<typeof PokemonSchema>;
+
