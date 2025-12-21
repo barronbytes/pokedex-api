@@ -1,5 +1,5 @@
 import { z, ZodError } from "zod";
-import { LocationsSchema, Locations } from "./pokeapi.types.js";
+import { LocationsSchema, Locations, LocationAreaSchema, LocationArea } from "./pokeapi.types.js";
 
 
 const baseURL = "https://pokeapi.co/api/v2/location-area";
@@ -64,10 +64,19 @@ async function fetchApi<T>(
 }
 
 
-// GET call to location areas endpoint => https://pokeapi.co/api/v2/location-area/{id or name}/
+// GET call to location areas endpoint
 export async function fetchLocations(
     pageURL: string | null
 ): Promise<ApiCallResult<Locations>> {
     const url = pageURL ?? `${baseURL}?limit=20`;
     return fetchApi(url, LocationsSchema);
+}
+
+
+// GET call to INDIVIDUAL location area endpoint
+export async function fetchLocationArea(
+    location: string | number
+): Promise<ApiCallResult<LocationArea>> {
+    const url = `${baseURL}/${location}`;
+    return fetchApi(url, LocationAreaSchema);
 }
