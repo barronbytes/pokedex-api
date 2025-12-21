@@ -25,5 +25,10 @@ export function getCommands(): Record<string, CLICommand> {
             description: "Displays the previous 20 location areas.",
             callback: Fnc.commandPreviousPage,
         },
+        explore: {
+            name: "explore",
+            description: "List Pokémon found within a location area.",
+            callback: Fnc.commandExplore,
+        },
     };
 }

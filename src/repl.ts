@@ -17,13 +17,14 @@ export async function startREPL(state: State): Promise<void> {
     repl.on("line", async (line) => {
         const words = cleanInput(line);
         const firstWord = words[0]?.toLowerCase() ?? "";
+        const args = words.slice(1);
         const command = commands[firstWord] ?? firstWord;
 
         if(typeof command === "string") {
             console.log(`Unknown command: "${firstWord}". Type "help" for a list of commands.`);
         } else {
             try {
-                await command.callback(state);   // <-- await here
+                await command.callback(state, ...args);   // <-- await here
             } catch (err) {
                 console.error("Command failed:", err);
             }

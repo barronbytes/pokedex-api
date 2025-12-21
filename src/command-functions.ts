@@ -81,3 +81,30 @@ export async function commandPreviousPage(state: State): Promise<void> {
         displayLocations(state, locations);
     }
 }
+
+
+// Return INDIVIDUAL PokeAPI location area
+export async function commandExplore(
+    state: State,
+    location?: string
+): Promise<void> {
+    if (!location) {
+        console.log("Invalid user input. Follow usage directions.");
+        console.log("Usage: explore <location-area>");
+        return;
+    }
+
+    console.log(`Exploring ${location}...`);
+
+    const result = await state.apiLocationArea(location);
+
+    if (!result.success) {
+        console.error(result.error.message);
+        return;
+    }
+
+    console.log("Found Pokemon:");
+    for (const encounter of result.data.pokemon_encounters) {
+        console.log(` - ${encounter.pokemon.name}`);
+    }
+}
