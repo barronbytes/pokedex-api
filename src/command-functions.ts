@@ -1,6 +1,5 @@
 import { State } from "./state.js";
-import { PaginationSchema } from "./pokeapi.types.js";
-import { z } from "zod";
+import { Pagination } from "./pokeapi.types.js";
 
 
 // Close the readline interface to stop the REPL loop before exiting the application
@@ -22,7 +21,7 @@ export async function commandHelp(state: State): Promise<void> {
 
 
 // Shared helper to fetch PokeAPI locations
-async function fetchLocationsAndUpdateCache(state: State, url: string): Promise<z.infer<typeof PaginationSchema> | void> {
+async function fetchLocationsAndUpdateCache(state: State, url: string): Promise<Pagination | void> {
     const result = await state.fetchPokeAPI(url);
 
     // Exit method if fetchPokeAPI fails
@@ -41,7 +40,7 @@ async function fetchLocationsAndUpdateCache(state: State, url: string): Promise<
 
 
 // Shared helper to print PokeAPI locations
-function displayLocations(state: State, locations: z.infer<typeof PaginationSchema>): void {
+function displayLocations(state: State, locations: Pagination): void {
     for (const loc of locations.results) { 
         console.log(loc.name); 
     } 
