@@ -3,7 +3,7 @@ import { LocationsSchema, Locations, LocationAreaSchema, LocationArea } from "./
 
 
 // "Result type pattern" => returns data (for success) or error (for failure)
-type ApiCallResult<T> =
+export type ApiCallResult<T> =
   | { success: true; data: T }
   | { success: false; error: Error };
 
@@ -85,8 +85,14 @@ export async function fetchLocations(
 
 // GET call to INDIVIDUAL location area endpoint
 export async function fetchLocationArea(
-    location: string | number
+    pageURL: string | null
 ): Promise<ApiCallResult<LocationArea>> {
-    const url = `${getBaseURL()}/${location}`;
-    return fetchApi(url, LocationAreaSchema);
+    if (!pageURL) {
+        return {
+            success: false,
+            error: new Error("Location area URL is required")
+        };
+    }
+
+    return fetchApi(pageURL, LocationAreaSchema);
 }

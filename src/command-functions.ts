@@ -1,5 +1,5 @@
 import { State } from "./state.js";
-import { getBaseURL } from "./pokeapi.js";
+import { getBaseURL, ApiCallResult } from "./pokeapi.js";
 import { Locations } from "./pokeapi.types.js";
 
 
@@ -21,9 +21,13 @@ export async function commandHelp(state: State): Promise<void> {
 }
 
 
-// Shared helper to fetch PokeAPI locations
-async function fetchLocationsAndUpdateCache(state: State, url: string): Promise<Locations | void> {
-    const result = await state.apiLocations(url);
+// Shared helper to fetch API data and update cache
+async function fetchAndCache<T>(
+    state: State, 
+    apiCallFunction: (url: string | null) => Promise<ApiCallResult<T>>,
+    cacheKey: string,
+): Promise<T | void> {
+    const result = await apiCallFunction(cacheKey);
 
     // Exit method if fetchPokeAPI fails
     if (!result.success) {
@@ -32,11 +36,11 @@ async function fetchLocationsAndUpdateCache(state: State, url: string): Promise<
     }
 
     // Update cache with url and locations
-    const locations = result.data;
-    state.pokeApiCache.addResponse(url, locations);
+    const cacheResult = result.data;
+    state.pokeApiCache.addResponse(cacheKey, cacheResult);
 
     // Return locations
-    return locations
+    return cacheResult
 }
 
 
@@ -54,10 +58,12 @@ function displayLocations(state: State, locations: Locations): void {
 
 // Return next page of PokeAPI location area results
 export async function commandNextPage(state: State): Promise<void> {
-    // Set url and locations with cache check
+    // Set url and response data with cache check
     const url = state.nextLocationsURL ?? `${getBaseURL()}?limit=20`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
-    const locations = cacheEntry ? cacheEntry.response : await fetchLocationsAndUpdateCache(state, url);
+    const locations = cacheEntry 
+        ? cacheEntry.response 
+        : await fetchAndCache(state, state.apiLocations, url);
 
     if (locations) {
         displayLocations(state, locations);
@@ -73,10 +79,12 @@ export async function commandPreviousPage(state: State): Promise<void> {
         return;
     }
 
-    // Set url and locations with cache check
+    // Set url and response data with cache check
     const url = state.prevLocationsURL ?? `${getBaseURL()}?limit=20`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
-    const locations = cacheEntry ? cacheEntry.response : await fetchLocationsAndUpdateCache(state, url);
+    const locations = cacheEntry 
+        ? cacheEntry.response 
+        : await fetchAndCache(state, state.apiLocations, url);
 
     if (locations) {
         displayLocations(state, locations);
@@ -90,22 +98,27 @@ export async function commandExplore(
     location?: string
 ): Promise<void> {
     if (!location) {
-        console.log("Invalid user input. Follow usage directions.");
-        console.log("Usage: explore <location-area>");
+        console.log("Error: Must provide location.");
+        console.log("Usage: explore <valid-location-area>");
+        return;
+    }
+
+    // Set url and response data with cache check
+    const url = `${getBaseURL()}/${location}`;
+    const cacheEntry = state.pokeApiCache.getResponse(url);
+    const locationArea = cacheEntry 
+        ? cacheEntry.response 
+        : await fetchAndCache(state, state.apiLocationArea, url);
+
+    if (!locationArea) {
+        console.log("Error: Location provided is invalid.");
+        console.log("Usage: explore <valid-location-area>");
         return;
     }
 
     console.log(`Exploring ${location}...`);
-
-    const result = await state.apiLocationArea(location);
-
-    if (!result.success) {
-        console.error(result.error.message);
-        return;
-    }
-
     console.log("Found Pokemon:");
-    for (const encounter of result.data.pokemon_encounters) {
+    for (const encounter of locationArea.pokemon_encounters) {
         console.log(` - ${encounter.pokemon.name}`);
     }
 }
