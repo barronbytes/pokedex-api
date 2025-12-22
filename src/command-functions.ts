@@ -21,7 +21,7 @@ export async function commandHelp(state: State): Promise<void> {
 }
 
 
-// Shared helper to fetch API data and update cache
+// Helper function to fetch location API data and update cache
 async function fetchAndCache<T>(
     state: State, 
     apiCallFunction: (url: string | null) => Promise<PokeAPI.ApiCallResult<T>>,
@@ -44,7 +44,33 @@ async function fetchAndCache<T>(
 }
 
 
-// Shared helper to print PokeAPI locations
+// Helper function to fetch pokemon API data
+export async function fetchPokemon(
+    state: State, 
+    ...args: string[]
+): Promise<Pokemon | void> {
+    if (!args.length) {
+        console.log("Please provide the name of a Pokémon for this command.");
+        return;
+    }
+
+    // Fetch Pokémon information
+    const pokemonName = args[0].toLowerCase();
+    const url = `${PokeAPI.getPokemonURL()}/${pokemonName}`;
+    const result = await PokeAPI.fetchPokemon(url);
+
+    if (!result.success) {
+        console.log(`Error: Failed to find Pokémon '${pokemonName}': ${result.error.message}`);
+        return;
+    }
+
+    // Return individual Pokemon
+    const pokemon: Pokemon = result.data;
+    return pokemon
+}
+
+
+// Helper function to print PokeAPI locations
 function displayLocations(state: State, locations: Locations): void {
     for (const loc of locations.results) { 
         console.log(loc.name); 
@@ -124,32 +150,20 @@ export async function commandExplore(
 }
 
 
-// Logic to determine when to add Pokemon to Pokedex
+// Logic to determine when Pokemon are caught to enter Pokedex
 export async function commandCatch(
     state: State, 
     ...args: string[]
 ): Promise<void> {
-    if (!args.length) {
-        console.log("Please provide the name of a Pokémon to catch.");
-        return;
-    }
+    // Determine if pokemon exists
+    const pokemon = await fetchPokemon(state, ...args);
+    if (!pokemon) return;
 
-    // Fetch Pokémon information
-    const pokemonName = args[0].toLowerCase();
-    const url = `${PokeAPI.getPokemonURL()}/${pokemonName}`;
-    const result = await PokeAPI.fetchPokemon(url);
-
-    if (!result.success) {
-        console.log(`Error: Failed to find Pokémon '${pokemonName}': ${result.error.message}`);
-        return;
-    }
-
-    // Set pokemon and catch logic (weaker pokemon => higher catchChance => wider roll vs catchChance range)
-    const pokemon: Pokemon = result.data;
+    // Set catch logic (weaker pokemon => higher catchChance => wider roll vs catchChance range)
     const catchChance = Math.max(0.1, 1 - pokemon.base_experience / 300);
     const roll = Math.random();
 
-    console.log(`Throwing a Pokeball at ${pokemonName}...`);
+    console.log(`Throwing a Pokeball at ${pokemon.name}...`);
 
     if (roll <= catchChance) {
         state.pokedex[pokemon.name] = pokemon;
@@ -160,37 +174,31 @@ export async function commandCatch(
 }
 
 
-// Logic to determine when to add Pokemon to Pokedex
+// Display individual Pokémon information from Pokédex
 export async function commandInspect(
     state: State, 
     ...args: string[]
 ): Promise<void> {
-    if (!args.length) {
-        console.log("Please provide the name of a Pokémon to catch.");
+    // Determine if pokemon exists
+    const pokemon = await fetchPokemon(state, ...args);
+    if (!pokemon) return;
+
+    if (!state.pokedex[pokemon.name]) {
+        console.log("you have not caught that pokemon");
         return;
     }
 
-    // Fetch Pokémon information
-    const pokemonName = args[0].toLowerCase();
-    const url = `${PokeAPI.getPokemonURL()}/${pokemonName}`;
-    const result = await PokeAPI.fetchPokemon(url);
+    console.log(`Name: ${pokemon.name}`);
+    console.log(`Height: ${pokemon.height}`);
+    console.log(`Weight: ${pokemon.weight}`);
 
-    if (!result.success) {
-        console.log(`Error: Failed to find Pokémon '${pokemonName}': ${result.error.message}`);
-        return;
+    console.log("Stats:");
+    for (const stat of pokemon.stats) {
+        console.log(`  - ${stat.stat.name}: ${stat.base_stat}`);
     }
 
-    // Set pokemon and catch logic (weaker pokemon => higher catchChance => wider roll vs catchChance range)
-    const pokemon: Pokemon = result.data;
-    const catchChance = Math.max(0.1, 1 - pokemon.base_experience / 300);
-    const roll = Math.random();
-
-    console.log(`Throwing a Pokeball at ${pokemonName}...`);
-
-    if (roll <= catchChance) {
-        state.pokedex[pokemon.name] = pokemon;
-        console.log(`${pokemon.name} was caught!`);
-    } else {
-        console.log(`${pokemon.name} escaped!`);
+    console.log("Types:");
+    for (const type of pokemon.types) {
+        console.log(`  - ${type.type.name}`);
     }
 }
