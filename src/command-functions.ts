@@ -208,15 +208,15 @@ export async function commandInspect(
 export async function commandPokedex(
     state: State
 ): Promise<void> {
-    const pokedexKeys = Object.keys(state.pokedex);
-    if (!pokedexKeys.length) {
+    const pokemon = Object.values(state.pokedex);
+    if (!pokemon.length) {
         console.log("Pokedex is empty.");
         return;
     }
 
     // Logic to print Pokedex
     console.log("Your Pokedex:");
-    for (const pokemon of pokedexKeys) {
-        console.log(`  - ${pokemon}`);
+    for (const poke of pokemon) {
+        console.log(`  - ${poke.name}`);
     }
 }
