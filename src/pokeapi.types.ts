@@ -23,66 +23,12 @@ export const LocationAreaSchema = z.object({
   name: z.string(),
   game_index: z.number(),
 
-  location: z.object({
-    name: z.string(),
-    url: z.httpUrl(),
-  }),
-
-  names: z.array(
-    z.object({
-      language: z.object({
-        name: z.string(),
-        url: z.httpUrl(),
-      }),
-      name: z.string(),
-    })
-  ),
-
-  encounter_method_rates: z.array(
-    z.object({
-      encounter_method: z.object({
-        name: z.string(),
-        url: z.httpUrl(),
-      }),
-      version_details: z.array(
-        z.object({
-          rate: z.number(),
-          version: z.object({
-            name: z.string(),
-            url: z.httpUrl(),
-          }),
-        })
-      ),
-    })
-  ),
-
   pokemon_encounters: z.array(
     z.object({
       pokemon: z.object({
         name: z.string(),
         url: z.httpUrl(),
       }),
-      version_details: z.array(
-        z.object({
-          encounter_details: z.array(
-            z.object({
-              chance: z.number(),
-              condition_values: z.array(z.any()),
-              max_level: z.number(),
-              min_level: z.number(),
-              method: z.object({
-                name: z.string(),
-                url: z.httpUrl(),
-              }),
-            })
-          ),
-          max_chance: z.number(),
-          version: z.object({
-            name: z.string(),
-            url: z.httpUrl(),
-          }),
-        })
-      ),
     })
   ),
 });
@@ -95,6 +41,27 @@ export const PokemonSchema = z.object({
   id: z.number(),
   name: z.string(),
   base_experience: z.number(),
+  height: z.number(),
+  weight: z.number(),
+  stats: z.array(
+    z.object({
+      base_stat: z.number(),
+      effort: z.number(),
+      stat: z.object({
+        name: z.string(),
+        url: z.httpUrl(),
+      }),
+    })
+  ),
+  types: z.array(
+    z.object({
+      slot: z.number(),
+      type: z.object({
+        name: z.string(),
+        url: z.httpUrl(),
+      }),
+    })
+  ),
 });
 
 export type Pokemon = z.infer<typeof PokemonSchema>;
