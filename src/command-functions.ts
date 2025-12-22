@@ -142,14 +142,14 @@ export async function commandCatch(
         return;
     }
 
+    // Set pokemon and catch logic (weaker pokemon => higher catchChance => wider roll vs catchChance range)
     const pokemon: Pokemon = result.data;
+    const catchChance = Math.max(0.1, 1 - pokemon.base_experience / 300);
+    const roll = Math.random();
+
     console.log(`Throwing a Pokeball at ${pokemonName}...`);
 
-    const catchChance = Math.max(0.1, 1 - pokemon.base_experience / 300);
-
-    const roll = Math.random();
     if (roll <= catchChance) {
-        // Caught
         state.pokedex[pokemon.name] = pokemon;
         console.log(`${pokemon.name} was caught!`);
     } else {

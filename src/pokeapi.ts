@@ -103,7 +103,7 @@ export async function fetchLocationArea(
     return fetchApi(pageURL, PokeTypes.LocationAreaSchema);
 }
 
-// GET call to INDIVIDUAL pokemon endpoint
+
 // GET call to INDIVIDUAL pokemon endpoint
 export async function fetchPokemon(
     pageURL: string | null
