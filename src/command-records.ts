@@ -35,5 +35,10 @@ export function getCommands(): Record<string, CLICommand> {
             description: "Attempt to catch a Pokémon and add it to your Pokédex.",
             callback: Fnc.commandCatch,
         },
+        inspect: {
+            name: "inspect",
+            description: "Display individual Pokémon information from Pokédex.",
+            callback: Fnc.commandInspect,
+        },
     };
 }

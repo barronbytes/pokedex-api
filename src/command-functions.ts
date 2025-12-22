@@ -1,5 +1,5 @@
 import { State } from "./state.js";
-import { getLocationURL, getPokemonURL, ApiCallResult } from "./pokeapi.js";
+import * as PokeAPI from "./pokeapi.js";
 import { Locations, Pokemon } from "./pokeapi.types.js";
 
 
@@ -24,7 +24,7 @@ export async function commandHelp(state: State): Promise<void> {
 // Shared helper to fetch API data and update cache
 async function fetchAndCache<T>(
     state: State, 
-    apiCallFunction: (url: string | null) => Promise<ApiCallResult<T>>,
+    apiCallFunction: (url: string | null) => Promise<PokeAPI.ApiCallResult<T>>,
     cacheKey: string,
 ): Promise<T | void> {
     const result = await apiCallFunction(cacheKey);
@@ -59,11 +59,11 @@ function displayLocations(state: State, locations: Locations): void {
 // Return next page of PokeAPI location area results
 export async function commandNextPage(state: State): Promise<void> {
     // Set url and response data with cache check
-    const url = state.nextLocationsURL ?? `${getLocationURL()}?limit=20`;
+    const url = state.nextLocationsURL ?? `${PokeAPI.getLocationURL()}?limit=20`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
     const locations = cacheEntry 
         ? cacheEntry.response 
-        : await fetchAndCache(state, state.apiLocations, url);
+        : await fetchAndCache(state, PokeAPI.fetchLocations, url);
 
     if (locations) {
         displayLocations(state, locations);
@@ -80,11 +80,11 @@ export async function commandPreviousPage(state: State): Promise<void> {
     }
 
     // Fetch location area information + cache check/update
-    const url = state.prevLocationsURL ?? `${getLocationURL()}?limit=20`;
+    const url = state.prevLocationsURL ?? `${PokeAPI.getLocationURL()}?limit=20`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
     const locations = cacheEntry 
         ? cacheEntry.response 
-        : await fetchAndCache(state, state.apiLocations, url);
+        : await fetchAndCache(state, PokeAPI.fetchLocations, url);
 
     if (locations) {
         displayLocations(state, locations);
@@ -104,11 +104,11 @@ export async function commandExplore(
     }
 
     // Fetch INDIVIDUAL location area information + cache check/update
-    const url = `${getLocationURL()}/${location}`;
+    const url = `${PokeAPI.getLocationURL()}/${location}`;
     const cacheEntry = state.pokeApiCache.getResponse(url);
     const locationArea = cacheEntry 
         ? cacheEntry.response 
-        : await fetchAndCache(state, state.apiLocationArea, url);
+        : await fetchAndCache(state, PokeAPI.fetchLocationArea, url);
 
     if (!locationArea) {
         console.log("Error: Location provided is invalid.");
@@ -123,6 +123,8 @@ export async function commandExplore(
     }
 }
 
+
+// Logic to determine when to add Pokemon to Pokedex
 export async function commandCatch(
     state: State, 
     ...args: string[]
@@ -134,8 +136,44 @@ export async function commandCatch(
 
     // Fetch Pokémon information
     const pokemonName = args[0].toLowerCase();
-    const url = `${getPokemonURL()}/${pokemonName}`;
-    const result = await state.apiPokemon(url);
+    const url = `${PokeAPI.getPokemonURL()}/${pokemonName}`;
+    const result = await PokeAPI.fetchPokemon(url);
+
+    if (!result.success) {
+        console.log(`Error: Failed to find Pokémon '${pokemonName}': ${result.error.message}`);
+        return;
+    }
+
+    // Set pokemon and catch logic (weaker pokemon => higher catchChance => wider roll vs catchChance range)
+    const pokemon: Pokemon = result.data;
+    const catchChance = Math.max(0.1, 1 - pokemon.base_experience / 300);
+    const roll = Math.random();
+
+    console.log(`Throwing a Pokeball at ${pokemonName}...`);
+
+    if (roll <= catchChance) {
+        state.pokedex[pokemon.name] = pokemon;
+        console.log(`${pokemon.name} was caught!`);
+    } else {
+        console.log(`${pokemon.name} escaped!`);
+    }
+}
+
+
+// Logic to determine when to add Pokemon to Pokedex
+export async function commandInspect(
+    state: State, 
+    ...args: string[]
+): Promise<void> {
+    if (!args.length) {
+        console.log("Please provide the name of a Pokémon to catch.");
+        return;
+    }
+
+    // Fetch Pokémon information
+    const pokemonName = args[0].toLowerCase();
+    const url = `${PokeAPI.getPokemonURL()}/${pokemonName}`;
+    const result = await PokeAPI.fetchPokemon(url);
 
     if (!result.success) {
         console.log(`Error: Failed to find Pokémon '${pokemonName}': ${result.error.message}`);
