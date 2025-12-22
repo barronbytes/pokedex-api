@@ -202,3 +202,21 @@ export async function commandInspect(
         console.log(`  - ${type.type.name}`);
     }
 }
+
+
+// Display all Pokémon found within Pokédex
+export async function commandPokedex(
+    state: State
+): Promise<void> {
+    const pokedexKeys = Object.keys(state.pokedex);
+    if (!pokedexKeys.length) {
+        console.log("Pokedex is empty.");
+        return;
+    }
+
+    // Logic to print Pokedex
+    console.log("Your Pokedex:");
+    for (const pokemon of pokedexKeys) {
+        console.log(`  - ${pokemon}`);
+    }
+}

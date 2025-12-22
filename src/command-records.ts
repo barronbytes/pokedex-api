@@ -40,5 +40,10 @@ export function getCommands(): Record<string, CLICommand> {
             description: "Display individual Pokémon information from Pokédex.",
             callback: Fnc.commandInspect,
         },
+        pokedex: {
+            name: "pokedex",
+            description: "Display all Pokémon found within Pokédex.",
+            callback: Fnc.commandPokedex,
+        },
     };
 }
