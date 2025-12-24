@@ -156,9 +156,9 @@ Available Commands:
 
 **Cache State:**
 
-> export type CacheEntry<T> = {
->  cachedAt: number;  // timestamp when this API response was cached
->  response: T;       // the actual PokeAPI response
+> export type CacheEntry<T> = {<br>
+>  cachedAt: number;  // timestamp when this API response was cached<br>
+>  response: T;       // the actual PokeAPI response<br>
 > };
 
 **CLI State:**
