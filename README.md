@@ -92,7 +92,7 @@ Start the program:
 
 ### Program Commands
 
-> `Pokédex > COMMAND`
+> `Pokédex > COMMAND [OPTIONAL ARGUMENTS]`
 
 - `help` >> Displays a help message
 - `map` >> Displays the next 20 location area names
