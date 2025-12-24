@@ -173,7 +173,7 @@ Available Commands:
 
 **Command-Line Interface (CLI):**
 
-> npm run start
+> npm run start<br>
 > Pokedex > <user_command> [optional arguments]
 
 **Command Calls:**
