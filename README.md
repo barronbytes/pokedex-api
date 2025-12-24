@@ -55,7 +55,7 @@ pokedex-cli/
 
 This repo will later be, if not already, saved as a subfolder. Be sure to only clone relevant files. Then, do the following:
 
-### Project & Dependencies Setup
+### Project and Dependencies Setup
 
 1. Clone repository
 2. Install [NVM](https://github.com/nvm-sh/nvm)
@@ -132,9 +132,9 @@ Start the program:
 **CLI Commands (CLICommand):**
 
 > export type CLICommand = {<br>
->   name: string;<br>
->   description: string;<br>
->   callback: (state: State, ...args: string[]) => Promise<void>;<br>
+>  name: string;<br>
+>  description: string;<br>
+>  callback: (state: State, ...args: string[]) => Promise<void>;<br>
 > };
 
 Available Commands:
@@ -152,12 +152,19 @@ Available Commands:
 - LocationArea — individual location area with Pokémon encounters
 - Pokemon — individual Pokémon with stats, types, and base attributes
 
+**Cache State:**
+
+> export type CacheEntry<T> = {
+>  cachedAt: number;  // timestamp when this API response was cached
+>  response: T;       // the actual PokeAPI response
+> };
+
 **CLI State:**
 
 - repl (Interface) — Node readline interface for user interaction
-- commands (Record<string, CLICommand>) — all available CLI commands and their callbacks
+- commands (Record<string, **CLICommand**>) — all available CLI commands and their callbacks
 - nextLocationsURL / prevLocationsURL (string | null) — pagination state for location areas
-- pokedex (Record<string, Pokemon>) — caught Pokémon, keyed by name
+- pokedex (Record<string, **Pokemon**>) — caught Pokémon, keyed by name
 - pokeApiCache (PokeApiCache) — in-memory cache for API responses
 
 ### 3. API (or Interface)
@@ -173,18 +180,33 @@ Available Commands:
 >
 > helperFunction(pageURL: string | null) -> Promise<ApiCallResult<T>>
 
-- REPL parses user input into tokens with `cleanInput(input: string)`
-- REPL assigns first token to `key` and remaining tokens to `args`
-- REPL searches for `key` in state: `commands: Record<string, CLICommand>`
+- Program state includes a **repl** interface and **commands** instance:
+- The REPL contains logic to decide what function to call:
+  - Parses user input into tokens with `cleanInput(input: string)`
+  - Assigns first token to `key` and remaining tokens to `args`
+  - Searches for `key` in state: `commands: Record<string, CLICommand>`
   - Matches will invoke callback functions asynchronously: `command.callback(state, ...args)`
   - Callback functions will use `args` to construct endpoint URL
+
 - Helper functions use **Zod library** to validate raw JSON responses against typed schemas
 - Helper functions standardize output and error handling with **result type pattern**: `({ success: true; data } | { success: false; error })`
 
 **Cache Management:**
 
-**State Management:**
+> `state.pokeApiCache.getResponse(url) -> CacheEntry | undefined`  
+> `state.pokeApiCache.addResponse(url, apiResponse)`  
 
+- Program state includes a **pokeApiCache** instance:
+  - Command and helper functions consume cache data transparently
+  - The program state saves cache data as a map: `Map<string, CacheEntry<any>>()`
+- Each cached entry is a `CacheEntry<T>` containing:
+  - `cachedAt` — timestamp (ms) when the API response was stored  
+  - `response` — the actual API response data (`T`)  
+- `getResponse(url)`: program checks cache prior to making new API calls
+- `addResponse(url)`: program updates cache on each new API call
+- Stale entries are automatically purged in the background by the private `#reap()` method, using `CACHE_INTERVAL_MS`  
+
+**State Management:**
 
 ## Credits and Contributing
 
