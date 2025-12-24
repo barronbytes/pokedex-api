@@ -153,6 +153,31 @@ Start the program:
 - pokedex (Record<string, Pokemon>) — caught Pokémon, keyed by name
 - pokeApiCache (PokeApiCache) — in-memory cache for API responses
 
+### 3. API (or Interface)
+
+**Command-Line Interface (CLI):**
+
+> npm run start
+> Pokedex > <user_command> [optional arguments]
+
+**Command Calls:**
+
+> command.callback(state: State, ...args: string[])
+> helperFunction(pageURL: string | null) -> Promise<ApiCallResult<T>>
+
+- REPL parses user input into tokens with `cleanInput(input: string)`
+- REPL assigns first token to `key` and remaining tokens to `args`
+- REPL searches for `key` in state: `commands: Record<string, CLICommand>`
+  - Matches will invoke callback functions asynchronously: `command.callback(state, ...args)`
+  - Callback functions will use `args` to construct endpoint URL
+- Helper functions use Zod library to validate raw JSON responses against typed schemas
+- Helper function output standardizes error handling with **result type pattern**: (`{ success: true; data } | { success: false; error }`)
+
+**Cache Management:**
+
+**State Management:**
+
+
 ## Credits and Contributing
 
 [Boot.dev](https://www.boot.dev) provided the project requirements and guidance to complete this project. Contributions are welcome! Feel free to report any problems.
