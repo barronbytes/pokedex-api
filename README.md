@@ -92,6 +92,8 @@ Start the program:
 
 ### Program Commands
 
+> `Pokédex > COMMAND`
+
 - `help` >> Displays a help message
 - `map` >> Displays the next 20 location area names
 - `mapb` >> Displays the previous 20 location area names
