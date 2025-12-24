@@ -163,6 +163,7 @@ Start the program:
 **Command Calls:**
 
 > command.callback(state: State, ...args: string[])
+>
 > helperFunction(pageURL: string | null) -> Promise<ApiCallResult<T>>
 
 - REPL parses user input into tokens with `cleanInput(input: string)`
