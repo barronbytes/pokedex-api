@@ -206,6 +206,13 @@ Available Commands:
 
 **State Management:**
 
+> initState() // initializes REPL, commands, pagination URLs, cache, and pokedex
+
+- State object instance created at startup by `initState()`
+- REPL needs state to be initialized:
+  - REPL does not mutate state directly, it only orchestrates command callback functions
+- Command callback and helper functions may read/update state (Pokédex, pagination, cache)
+
 ## Credits and Contributing
 
 [Boot.dev](https://www.boot.dev) provided the project requirements and guidance to complete this project. Contributions are welcome! Feel free to report any problems.
