@@ -17,17 +17,17 @@ export function getCommands(): Record<string, CLICommand> {
         },
         map: {
             name: "map",
-            description: "Displays the next 20 location areas.",
+            description: "Displays the next 20 location area names.",
             callback: Fnc.commandNextPage,
         },
         mapb: {
             name: "mapb",
-            description: "Displays the previous 20 location areas.",
+            description: "Displays the previous 20 location area names.",
             callback: Fnc.commandPreviousPage,
         },
         explore: {
             name: "explore",
-            description: "List Pokémon found within a location area.",
+            description: "List Pokémon names found within a location area.",
             callback: Fnc.commandExplore,
         },
         catch: {
@@ -42,7 +42,7 @@ export function getCommands(): Record<string, CLICommand> {
         },
         pokedex: {
             name: "pokedex",
-            description: "Display all Pokémon found within Pokédex.",
+            description: "Display all caught Pokémon as part of Pokédex.",
             callback: Fnc.commandPokedex,
         },
     };

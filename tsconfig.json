@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "rootDir": "./src", // Location of input (original) TypeScript code
+    "outDir": "./dist", // Location of output (compiled) JavaScript code
     "strict": true,
-    "target": "esnext", // Affects compiled JS (overall language features, e.g., async/await, classes)
-    "module": "esnext", // Affects compiled JS (import and export syntax)
-    "moduleResolution": "Node", // Affects imports (how TypeScript locates modules for all import ... from ... statements)
-    "esModuleInterop": true, // Affects default imports (allows default-style imports from CommonJS modules)
-    "skipLibCheck": true // Affects type checking (skips checking types in declaration files in node_modules)
+    "target": "esnext", // What JavaScript language FEATURES get compiled
+    "module": "esnext", // What JavaScript MODULE FORMAT gets compiled
+    "moduleResolution": "Node", // How TypeScript finds imported files (import ... from ...)
+    "esModuleInterop": true, // How TypeScript handles default imports from CommonJS modules (affects type-checking and compiled JS)
+    "skipLibCheck": true // What TypeScript skips during type-checking (.d.ts declaration files in node_modules)
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["node_modules"]
