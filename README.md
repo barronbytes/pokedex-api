@@ -176,8 +176,7 @@ Available Commands:
 
 **Command Calls:**
 
-> command.callback(state: State, ...args: string[])
->
+> command.callback(state: State, ...args: string[])<br>
 > helperFunction(pageURL: string | null) -> Promise<ApiCallResult<T>>
 
 - Program state includes a **repl** interface and **commands** instance:
@@ -187,7 +186,6 @@ Available Commands:
   - Searches for `key` in state: `commands: Record<string, CLICommand>`
   - Matches will invoke callback functions asynchronously: `command.callback(state, ...args)`
   - Callback functions will use `args` to construct endpoint URL
-
 - Helper functions use **Zod library** to validate raw JSON responses against typed schemas
 - Helper functions standardize output and error handling with **result type pattern**: `({ success: true; data } | { success: false; error })`
 
