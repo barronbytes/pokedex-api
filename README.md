@@ -171,7 +171,7 @@ Start the program:
   - Matches will invoke callback functions asynchronously: `command.callback(state, ...args)`
   - Callback functions will use `args` to construct endpoint URL
 - Helper functions use Zod library to validate raw JSON responses against typed schemas
-- Helper functions standardize output and error handling with **result type pattern**: (`{ success: true; data } | { success: false; error }`)
+- Helper functions standardize output and error handling with **result type pattern**: `({ success: true; data } | { success: false; error })`
 
 **Cache Management:**
 
