@@ -131,6 +131,13 @@ Start the program:
 
 **CLI Commands (CLICommand):**
 
+> export type CLICommand = {<br>
+>   name: string;<br>
+>   description: string;<br>
+>   callback: (state: State, ...args: string[]) => Promise<void>;<br>
+> };
+
+Available Commands:
 - help — displays help message
 - map/mapb — lists next/previous location areas
 - explore — lists Pokémon in a location area
@@ -171,7 +178,7 @@ Start the program:
 - REPL searches for `key` in state: `commands: Record<string, CLICommand>`
   - Matches will invoke callback functions asynchronously: `command.callback(state, ...args)`
   - Callback functions will use `args` to construct endpoint URL
-- Helper functions use Zod library to validate raw JSON responses against typed schemas
+- Helper functions use **Zod library** to validate raw JSON responses against typed schemas
 - Helper functions standardize output and error handling with **result type pattern**: `({ success: true; data } | { success: false; error })`
 
 **Cache Management:**
