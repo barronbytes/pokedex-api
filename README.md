@@ -93,13 +93,13 @@ Start the program:
 ### Program Commands
 
 - `help` >> Displays a help message
-- `exit` >> Exits the Pokedex
 - `map` >> Displays the next 20 location area names
 - `mapb` >> Displays the previous 20 location area names
 - `explore LOCATION-AREA-NAME` >> List Pokémon names found within a location area
 - `catch POKEMON-NAME` >> Attempt to catch a Pokémon and add it to your Pokédex
 - `inspect POKEMON-NAME` >> Display individual Pokémon information from Pokédex
 - `pokedex` >> Display all caught Pokémon as part of Pokédex
+- `exit` >> Exits the Pokedex
 
 ## System Design
 
@@ -114,10 +114,44 @@ Start the program:
 
 **Optional Requirements:**
 
+- Verbose mode: include additional metadata in command output
 - Low latency: aim for response times under ~200ms
 - Scalability: support up to ~1M daily active users (DAU)
 - CAP consideration: prioritize consistency (accurate state and cache) over availability in failure scenarios
 - Cache management: save new API responses, purge stale data based on cache interval
+
+### 2. Core Entities
+
+**Environment Settings:**
+
+- APP_PROMPT (string) — CLI prompt displayed to the user
+- CACHE_INTERVAL_MS (number) — duration (ms) for caching API responses
+- BASE_LOCATION_URL (string) — PokéAPI endpoint for location areas
+- BASE_POKEMON_URL (string) — PokéAPI endpoint for individual Pokémon
+
+**CLI Commands (CLICommand):**
+
+- help — displays help message
+- map/mapb — lists next/previous location areas
+- explore — lists Pokémon in a location area
+- catch — attempts to catch a Pokémon and add to Pokédex
+- inspect — displays details of a caught Pokémon
+- pokedex — lists all caught Pokémon
+- exit — closes the CLI
+
+**PokéAPI Data Types:**
+
+- Locations — paginated list of location areas
+- LocationArea — individual location area with Pokémon encounters
+- Pokemon — individual Pokémon with stats, types, and base attributes
+
+**CLI State:**
+
+- repl (Interface) — Node readline interface for user interaction
+- commands (Record<string, CLICommand>) — all available CLI commands and their callbacks
+- nextLocationsURL / prevLocationsURL (string | null) — pagination state for location areas
+- pokedex (Record<string, Pokemon>) — caught Pokémon, keyed by name
+- pokeApiCache (PokeApiCache) — in-memory cache for API responses
 
 ## Credits and Contributing
 
