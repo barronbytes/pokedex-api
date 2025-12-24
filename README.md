@@ -103,7 +103,21 @@ Start the program:
 
 ## System Design
 
-...
+### 1. Requirements
+
+**Functional Requirements:**
+
+- CLI frontend accepts user commands
+- Commands fetch data from PokéAPI endpoints
+- Command actions include: listing location areas, viewing Pokémon by area, catching Pokémon, inspecting caught Pokémon, and showing caught Pokémon in the Pokédex
+- Stronger Pokémon should be more difficult to catch
+
+**Optional Requirements:**
+
+- Low latency: aim for response times under ~200ms
+- Scalability: support up to ~1M daily active users (DAU)
+- CAP consideration: prioritize consistency (accurate state and cache) over availability in failure scenarios
+- Cache management: save new API responses, purge stale data based on cache interval
 
 ## Credits and Contributing
 
