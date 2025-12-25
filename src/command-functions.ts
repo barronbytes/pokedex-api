@@ -39,8 +39,8 @@ async function fetchAndCache<T>(
     const cacheResult = result.data;
     state.pokeApiCache.addResponse(cacheKey, cacheResult);
 
-    // Return locations
-    return cacheResult
+    // Return cache result
+    return state.pokeApiCache.getResponse(cacheKey)?.response as T;
 }
 
 
