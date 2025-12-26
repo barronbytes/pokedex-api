@@ -1,3 +1,4 @@
+import { performance } from "node:perf_hooks";
 import { State } from "./state.js";
 import * as PokeAPI from "./pokeapi.js";
 import { Locations, Pokemon } from "./pokeapi.types.js";
@@ -86,14 +87,23 @@ function displayLocations(state: State, locations: Locations): void {
 export async function commandNextPage(state: State): Promise<void> {
     // Set url and response data with cache check
     const requestURL = state.nextLocationsURL ?? `${PokeAPI.getLocationURL()}?limit=20`;
+    const start = performance.now();
     const cacheEntry = state.pokeApiCache.getResponse(requestURL);
     const locations = cacheEntry 
         ? cacheEntry.response 
         : await fetchAndCache(state, PokeAPI.fetchLocations, requestURL);
+    const end = performance.now();
 
     if (locations) {
         displayLocations(state, locations);
     }
+    
+    // Display performance times for cache call vs API call
+    console.log(
+        cacheEntry
+        ? `  - Used cache call -> time: ${(end-start).toFixed(2)} ms`
+        : `  - New API call -> time: ${(end-start).toFixed(2)} ms` 
+    );
 }
 
 
@@ -107,14 +117,23 @@ export async function commandPreviousPage(state: State): Promise<void> {
 
     // Fetch location area information + cache check/update
     const requestURL = state.prevLocationsURL ?? `${PokeAPI.getLocationURL()}?limit=20`;
+    const start = performance.now();
     const cacheEntry = state.pokeApiCache.getResponse(requestURL);
     const locations = cacheEntry 
         ? cacheEntry.response 
         : await fetchAndCache(state, PokeAPI.fetchLocations, requestURL);
+    const end = performance.now();
 
     if (locations) {
         displayLocations(state, locations);
     }
+
+    // Display performance times for cache call vs API call
+    console.log(
+        cacheEntry
+        ? `  - Used cache call -> time: ${(end-start).toFixed(2)} ms`
+        : `  - New API call -> time: ${(end-start).toFixed(2)} ms` 
+    );
 }
 
 
