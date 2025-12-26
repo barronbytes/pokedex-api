@@ -173,13 +173,13 @@ Available Commands:
 
 **Command-Line Interface (CLI):**
 
-> npm run start<br>
-> Pokedex > <user_command> [optional arguments]
+> `npm run start`<br>
+> `Pokedex > user_command [optional arguments]`
 
 **Command Calls:**
 
-> command.callback(state: State, ...args: string[])<br>
-> helperFunction(requestURL: string | null) -> Promise<ApiCallResult<T>>
+> `command.callback(state: State, ...args: string[])`<br>
+> `helperFunction(requestURL: string | null) -> Promise<ApiCallResult<T>>`
 
 - Program state includes a **repl** interface and **commands** instance:
 - The REPL contains logic to decide what function to call:
@@ -208,7 +208,7 @@ Available Commands:
 
 **State Management:**
 
-> initState() // initializes REPL, commands, pagination URLs, cache, and pokedex
+> `initState()` // initializes REPL, commands, pagination URLs, cache, and pokedex
 
 - State object instance created at startup by `initState()`
 - REPL needs state to be initialized:
@@ -221,8 +221,8 @@ Available Commands:
 
 **User Input → REPL → Tokens**
 
-> Pokedex > USER INPUT COMMANDS<br>
-> cleanInput(input) → key, args
+> `Pokedex > user_command [optional arguments]`<br>
+> `cleanInput(input)` → key, args
 
 - REPL reads user input and splits it into token words
 - First token assigned to `key: string` and used to lookup corresponding CLICommand: `state.commands[key]`
@@ -230,7 +230,7 @@ Available Commands:
 
 **Callback Function Calls**
 
-> command.callback(state, ...args) → Promise<void>
+> `command.callback(state, ...args) → Promise<void>`
 
 - Each CLICommand found on lookup has a callback function to invoke in `command-functions.ts`
 - Callback functions for some commands (`help`, `exit`, `pokedex`) may be executed without making API calls
@@ -239,8 +239,8 @@ Available Commands:
 
 **Cache Calls**
 
-> state.pokeApiCache.getResponse(requestURL) → CacheEntry<any><br>
-> fetchAndCache(state, PokeAPI.apiCallFunction, requestURL) → Promise<T>
+> `state.pokeApiCache.getResponse(requestURL) → CacheEntry<any>`<br>
+> `fetchAndCache(state, PokeAPI.apiCallFunction, requestURL) → Promise<T>`
 
 - Initial cache search made by `getResonse()`
   - If found, `CacheEntry.response` contains response data
@@ -251,8 +251,8 @@ Available Commands:
 
 **API Calls**
 
-> apiCallFunction(requestURL) → Promise<T><br>
-> fetchApi(requestURL, PokeTypes.CustomSchema) → Promise<T>
+> `apiCallFunction(requestURL) → Promise<T>`<br>
+> `fetchApi(requestURL, PokeTypes.CustomSchema) → Promise<T>`
 
 - The `fetchAndCache()` function internally calls `apiCallFunction(requestURL)`
 - The API call function also internally calls `fetchApi(requestURL, PokeTypes.CustomSchema)`
