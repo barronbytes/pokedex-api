@@ -158,6 +158,11 @@ export async function commandCatch(
     // Determine if pokemon exists
     const pokemon = await fetchPokemon(state, ...args);
     if (!pokemon) return;
+    if (state.pokedex[pokemon.name]) {
+        console.log("you have alredy caught that Pokemon");
+        console.log("use the `pokedex` command to confirm");
+        return;
+    }
 
     // Set catch logic (weaker pokemon => higher catchChance => wider roll vs catchChance range)
     const catchChance = Math.max(0.1, 1 - pokemon.base_experience / 300);
@@ -184,7 +189,7 @@ export async function commandInspect(
     if (!pokemon) return;
 
     if (!state.pokedex[pokemon.name]) {
-        console.log("you have not caught that pokemon");
+        console.log("you have not caught that Pokemon");
         return;
     }
 

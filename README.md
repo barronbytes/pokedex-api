@@ -215,6 +215,26 @@ Available Commands:
   - REPL does not mutate state directly, it only orchestrates command callback functions
 - Command callback and helper functions may read/update state (Pokédex, pagination, cache)
 
+### 4. Data Flow
+
+<img src="./public/pokedex-data-flow.PNG" alt="" width="100%">
+
+User input gets transformed several times to create a final form:
+
+- User provides an input string
+- REPL parses input. First word gets assigned to `key: string` and remaining words get assigned to `args: string[]`
+  - The `key` is used to search for a matching command name `state.commands` registry
+  - If a match is found, then a `command` object is created with access to callback function properties
+- Callback function is called: `command.callback(state, ...args): Promise<void> {}`
+  - Some commands (`help`, `exit`) can be executed without API calls
+  - The `pokedex` never makes API calls and only checks `state.pokedex`
+  - The `explore` command always makes new API calls
+  - Some commands (`catch`, `inspect`) check `state.pokedex` before making new API calls
+  - Some commands (`map`, `mapb`) always **check the cache** prior to making new API calls
+- Cache is updated and purged of stale data
+- JSON response objects from API calls validated against typed schemas built with **Zod library**
+- Responses formatted for user presentation
+
 ## Credits and Contributing
 
 [Boot.dev](https://www.boot.dev) provided the project requirements and guidance to complete this project. Contributions are welcome! Feel free to report any problems.
