@@ -248,7 +248,7 @@ Available Commands:
 - If not found, `fetchAndCache()` helper function will update cache
   - Will make and store API call: `result = await apiCallFunction(requestURL)`
   - Will update cache: `state.pokeApiCache.addResponse(requestURL, cacheResult)`
-- Measured metrics show that cached responses are over 7000x faster than the average nwe API call (~0.01 ms vs ~ 77ms for uncached requests)
+- Measured metrics show that **cached responses are over 7,000x faster than the average new API call** (~0.01 ms vs ~ 77ms for uncached requests)
 - Stale cache entries are removed automatically in the background
 
 **API Calls**
