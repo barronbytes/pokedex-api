@@ -25,9 +25,9 @@ export async function commandHelp(state: State): Promise<void> {
 async function fetchAndCache<T>(
     state: State, 
     apiCallFunction: (url: string | null) => Promise<PokeAPI.ApiCallResult<T>>,
-    cacheKey: string,
+    requestURL: string,
 ): Promise<T | void> {
-    const result = await apiCallFunction(cacheKey);
+    const result = await apiCallFunction(requestURL);
 
     // Exit method if fetchPokeAPI fails
     if (!result.success) {
@@ -37,10 +37,10 @@ async function fetchAndCache<T>(
 
     // Update cache with url and locations
     const cacheResult = result.data;
-    state.pokeApiCache.addResponse(cacheKey, cacheResult);
+    state.pokeApiCache.addResponse(requestURL, cacheResult);
 
     // Return cache result
-    return state.pokeApiCache.getResponse(cacheKey)?.response as T;
+    return state.pokeApiCache.getResponse(requestURL)?.response as T;
 }
 
 
@@ -56,8 +56,8 @@ export async function fetchPokemon(
 
     // Fetch Pokémon information
     const pokemonName = args[0].toLowerCase();
-    const url = `${PokeAPI.getPokemonURL()}/${pokemonName}`;
-    const result = await PokeAPI.fetchPokemon(url);
+    const requestURL = `${PokeAPI.getPokemonURL()}/${pokemonName}`;
+    const result = await PokeAPI.fetchPokemon(requestURL);
 
     if (!result.success) {
         console.log(`Error: Failed to find Pokémon '${pokemonName}': ${result.error.message}`);
@@ -85,11 +85,11 @@ function displayLocations(state: State, locations: Locations): void {
 // Return next page of PokeAPI location area results
 export async function commandNextPage(state: State): Promise<void> {
     // Set url and response data with cache check
-    const url = state.nextLocationsURL ?? `${PokeAPI.getLocationURL()}?limit=20`;
-    const cacheEntry = state.pokeApiCache.getResponse(url);
+    const requestURL = state.nextLocationsURL ?? `${PokeAPI.getLocationURL()}?limit=20`;
+    const cacheEntry = state.pokeApiCache.getResponse(requestURL);
     const locations = cacheEntry 
         ? cacheEntry.response 
-        : await fetchAndCache(state, PokeAPI.fetchLocations, url);
+        : await fetchAndCache(state, PokeAPI.fetchLocations, requestURL);
 
     if (locations) {
         displayLocations(state, locations);
@@ -106,11 +106,11 @@ export async function commandPreviousPage(state: State): Promise<void> {
     }
 
     // Fetch location area information + cache check/update
-    const url = state.prevLocationsURL ?? `${PokeAPI.getLocationURL()}?limit=20`;
-    const cacheEntry = state.pokeApiCache.getResponse(url);
+    const requestURL = state.prevLocationsURL ?? `${PokeAPI.getLocationURL()}?limit=20`;
+    const cacheEntry = state.pokeApiCache.getResponse(requestURL);
     const locations = cacheEntry 
         ? cacheEntry.response 
-        : await fetchAndCache(state, PokeAPI.fetchLocations, url);
+        : await fetchAndCache(state, PokeAPI.fetchLocations, requestURL);
 
     if (locations) {
         displayLocations(state, locations);

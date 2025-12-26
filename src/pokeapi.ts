@@ -82,38 +82,38 @@ async function fetchApi<T>(
 
 // GET call to location areas endpoint
 export async function fetchLocations(
-    pageURL: string | null
+    requestURL: string | null
 ): Promise<ApiCallResult<PokeTypes.Locations>> {
-    const url = pageURL ?? `${getLocationURL()}?limit=20`;
+    const url = requestURL ?? `${getLocationURL()}?limit=20`;
     return fetchApi(url, PokeTypes.LocationsSchema);
 }
 
 
 // GET call to INDIVIDUAL location area endpoint
 export async function fetchLocationArea(
-    pageURL: string | null
+    requestURL: string | null
 ): Promise<ApiCallResult<PokeTypes.LocationArea>> {
-    if (!pageURL) {
+    if (!requestURL) {
         return {
             success: false,
             error: new Error("Location area URL is required")
         };
     }
 
-    return fetchApi(pageURL, PokeTypes.LocationAreaSchema);
+    return fetchApi(requestURL, PokeTypes.LocationAreaSchema);
 }
 
 
 // GET call to INDIVIDUAL pokemon endpoint
 export async function fetchPokemon(
-    pageURL: string | null
+    requestURL: string | null
 ): Promise<ApiCallResult<PokeTypes.Pokemon>> {
-    if (!pageURL) {
+    if (!requestURL) {
         return {
             success: false,
             error: new Error("Pokemon URL is required")
         };
     }
 
-    return fetchApi(pageURL, PokeTypes.PokemonSchema);
+    return fetchApi(requestURL, PokeTypes.PokemonSchema);
 }

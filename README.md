@@ -219,21 +219,48 @@ Available Commands:
 
 <img src="./public/pokedex-data-flow.PNG" alt="" width="100%">
 
-User input gets transformed several times to create a final form:
+**User Input → REPL → Tokens**
 
-- User provides an input string
-- REPL parses input. First word gets assigned to `key: string` and remaining words get assigned to `args: string[]`
-  - The `key` is used to search for a matching command name `state.commands` registry
-  - If a match is found, then a `command` object is created with access to callback function properties
-- Callback function is called: `command.callback(state, ...args): Promise<void> {}`
-  - Some commands (`help`, `exit`) can be executed without API calls
-  - The `pokedex` never makes API calls and only checks `state.pokedex`
-  - The `explore` command always makes new API calls
-  - Some commands (`catch`, `inspect`) check `state.pokedex` before making new API calls
-  - Some commands (`map`, `mapb`) always **check the cache** prior to making new API calls
-- Cache is updated and purged of stale data
-- JSON response objects from API calls validated against typed schemas built with **Zod library**
-- Responses formatted for user presentation
+> Pokedex > USER INPUT COMMANDS
+> cleanInput(input) → key, args
+
+- REPL reads user input and splits it into token words
+- First token assigned to `key: string` and used to lookup corresponding CLICommand: `state.commands[key]`
+- Remaining tokens assigned to `args: string[]` and passed to found callback functions on lookup
+
+**Callback Function Calls**
+
+> command.callback(state, ...args) → Promise<void>
+
+- Each CLICommand found on lookup has a callback function to invoke in `command-functions.ts`
+- Callback functions for some commands (`help`, `exit`, `pokedex`) may be executed without making API calls
+- Remaining callback functions construct **requestURL** argument for API calls
+- Cache always checked prior to making new API calls
+
+**Cache Calls**
+
+> state.pokeApiCache.getResponse(requestURL) → CacheEntry<any><br>
+> fetchAndCache(state, PokeAPI.apiCallFunction, requestURL) → Promise<T>
+
+- Initial cache search made by `getResonse()`
+  - If found, `CacheEntry.response` contains response data
+- If not found, `fetchAndCache()` helper function will update cache
+  - Will make and store API call: `result = await apiCallFunction(requestURL)`
+  - Will update cache: `state.pokeApiCache.addResponse(requestURL, cacheResult)`
+- Stale cache entries are removed automatically in the background
+
+**API Calls**
+
+> apiCallFunction(requestURL) → Promise<T><br>
+> fetchApi(requestURL, PokeTypes.CustomSchema) → Promise<T>
+
+- The `fetchAndCache()` function internally calls `apiCallFunction(requestURL)`
+- The API call function also internally calls `fetchApi(requestURL, PokeTypes.CustomSchema)`
+- JSON responses are validated against typed schemas built with **Zod library**
+
+# High Level Design
+
+...
 
 ## Credits and Contributing
 
