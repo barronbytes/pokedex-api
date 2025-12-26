@@ -204,6 +204,7 @@ Available Commands:
   - `response` — the actual API response data (`T`)  
 - `getResponse(url)`: program checks cache prior to making new API calls
 - `addResponse(url)`: program updates cache on each new API call
+- If a cached entry exists, the response is returend instantly; otherwise, `fetchAndCache()` makes a new API call and updates the cache
 - Stale entries are automatically purged in the background by the private `#reap()` method, using `CACHE_INTERVAL_MS`  
 
 **State Management:**
@@ -247,6 +248,7 @@ Available Commands:
 - If not found, `fetchAndCache()` helper function will update cache
   - Will make and store API call: `result = await apiCallFunction(requestURL)`
   - Will update cache: `state.pokeApiCache.addResponse(requestURL, cacheResult)`
+- Measured metrics show that cached responses are over 7000x faster than the average nwe API call (~0.01 ms vs ~ 77ms for uncached requests)
 - Stale cache entries are removed automatically in the background
 
 **API Calls**
