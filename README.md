@@ -258,9 +258,14 @@ Available Commands:
 - The API call function also internally calls `fetchApi(requestURL, PokeTypes.CustomSchema)`
 - JSON responses are validated against typed schemas built with **Zod library**
 
-# High Level Design
+### 5. High Level Design
 
-...
+The project currently represents a **single-node, stateful CLI application** that runs on the client machine. The program uses a REPL with shared state to orchestrate function calls. No backend server or persistent database is required; instead, in-memory state and cache storage are used. The project could be improved to be more robust in the following manner:
+
+1. **Client:** Build frontend with HTML and JavaScript. Include input forms for users to submit commands.
+2. **API Gateway:** This is a single, centralized entry point and security perimeter to the backend servers. **Security benefits** include handling authentication/authorization and rate limiting. **Scalability benefits** include horizontal load balancing and service routing.
+3. **Server:** A Node.js server would receive requests from the client and run the command logic that currently lives in the CLI. Making the server stateless would allow multiple server instances to run at once and scale with user traffic.
+4. **Database:** May use open-source **Memcached** and **PostgreSQL** solutions for cache and database needs, respectively.
 
 ## Credits and Contributing
 
