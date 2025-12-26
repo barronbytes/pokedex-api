@@ -179,7 +179,7 @@ Available Commands:
 **Command Calls:**
 
 > command.callback(state: State, ...args: string[])<br>
-> helperFunction(pageURL: string | null) -> Promise<ApiCallResult<T>>
+> helperFunction(requestURL: string | null) -> Promise<ApiCallResult<T>>
 
 - Program state includes a **repl** interface and **commands** instance:
 - The REPL contains logic to decide what function to call:
@@ -193,8 +193,8 @@ Available Commands:
 
 **Cache Management:**
 
-> `state.pokeApiCache.getResponse(url) -> CacheEntry | undefined`  
-> `state.pokeApiCache.addResponse(url, apiResponse)`  
+> `state.pokeApiCache.getResponse(requestURL) -> CacheEntry | undefined`<br>
+> `state.pokeApiCache.addResponse(requestURL, apiResponse)`  
 
 - Program state includes a **pokeApiCache** instance:
   - Command and helper functions consume cache data transparently
@@ -221,7 +221,7 @@ Available Commands:
 
 **User Input → REPL → Tokens**
 
-> Pokedex > USER INPUT COMMANDS
+> Pokedex > USER INPUT COMMANDS<br>
 > cleanInput(input) → key, args
 
 - REPL reads user input and splits it into token words
